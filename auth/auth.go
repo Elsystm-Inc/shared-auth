@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Token model
 type tokenModel struct {
 	Token     string    `json:"token"`
 	Agent     string    `json:"agent"`
@@ -18,6 +19,7 @@ type tokenModel struct {
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
+// Authentication model
 type Authentication struct {
 	URL       string
 	Token     string
@@ -27,6 +29,7 @@ type Authentication struct {
 	UserId    int64
 }
 
+// Create instance
 func NewAuth(request *http.Request, URL string) Authentication {
 	auth := authentication()
 	return auth(request, URL)
@@ -35,6 +38,11 @@ func NewAuth(request *http.Request, URL string) Authentication {
 func authentication() func(request *http.Request, URL string) Authentication {
 	return func(request *http.Request, URL string) Authentication {
 		var authentication Authentication
+		// Set IsAuth
+		// Set IsExpired
+		// Set URL
+		// Set If token found
+		// Check token if found, not found or expired
 		authentication.IsAuth = false
 		authentication.IsExpired = false
 		authentication.URL = URL
@@ -48,7 +56,7 @@ func authentication() func(request *http.Request, URL string) Authentication {
 	}
 }
 
-// Check if token found or no
+// Set Token
 func (auth *Authentication) SetTokenFromRequest(request *http.Request) {
 	authorization := request.Header["Authorization"]
 	if len(authorization) == 0 {
@@ -64,6 +72,7 @@ func (auth *Authentication) SetTokenFromRequest(request *http.Request) {
 	auth.HaveToken = true
 }
 
+// Check token if found or expired or available
 func (auth *Authentication) checkToken() {
 	var model tokenModel
 	postBody, _ := json.Marshal(map[string]string{

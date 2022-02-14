@@ -24,6 +24,7 @@ type Authentication struct {
 	HaveToken bool
 	IsAuth    bool
 	IsExpired bool
+	UserId    int64
 }
 
 func NewAuth(request *http.Request, URL string) Authentication {
@@ -34,6 +35,8 @@ func NewAuth(request *http.Request, URL string) Authentication {
 func authentication() func(request *http.Request, URL string) Authentication {
 	return func(request *http.Request, URL string) Authentication {
 		var authentication Authentication
+		authentication.IsAuth = false
+		authentication.IsExpired = false
 		authentication.URL = URL
 		authentication.SetTokenFromRequest(request)
 
@@ -82,8 +85,11 @@ func (auth *Authentication) checkToken() {
 		duration := model.ExpiredAt.Sub(time.Now()).Hours()
 		if duration <= 0 {
 			auth.IsExpired = true
+			auth.IsAuth = false
 			return
 		}
+		auth.IsExpired = false
 		auth.IsAuth = true
+		auth.UserId = model.UserId
 	}
 }
